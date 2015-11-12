@@ -136,6 +136,7 @@ cdata.set('SDL_POWER_LINUX', 1)
 cdata.set('SDL_THREAD_PTHREAD', 1)
 cdata.set('SDL_JOYSTICK_LINUX', 1)
 cdata.set('SDL_INPUT_LINUXEV', 1)
+cdata.set('SDL_INPUT_LINUXKD', 1)
 cdata.set('SDL_HAPTIC_LINUX', 1)
 cdata.set('SDL_TIMER_UNIX', 1)
 cdata.set('SDL_FILESYSTEM_UNIX', 1)
@@ -150,6 +151,7 @@ cdata.set('SDL_VIDEO_DRIVER_X11_SUPPORTS_GENERIC_EVENTS', 1)
 core_inc = include_directories('.', 'include')
 all_sources = []
 
+alsa_dep = dependency('alsa', required : false)
 x11_dep = dependency('x11', required : false)
 xi_dep = dependency('xi', required : false)
 gl_dep = dependency('gl', required : false)
@@ -170,6 +172,10 @@ if x11_dep.found()
   endif
 endif
 
+if alsa_dep.found()
+  cdata.set('SDL_AUDIO_DRIVER_ALSA', 1)
+endif
+
 # The config file is at root because we want to
 # ensure that it comes before the include subdir
 # in search order and include also has a SDL_config.h.
@@ -184,6 +190,7 @@ core_deps = [find_library('m', required : false),
   find_library('dl', required : false),
   find_library('pthread', required : false),
   x11_dep, xi_dep, xrandr_dep, gl_dep, xinerama_dep,
+  alsa_dep,
 ]
 
 sdl2 = library('sdl2',

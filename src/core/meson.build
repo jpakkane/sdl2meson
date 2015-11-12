@@ -1,2 +1,1 @@
-all_sources += files(
-)
+subdir('linux')
