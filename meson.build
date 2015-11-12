@@ -135,6 +135,7 @@ double dummy = M_PI
 endif
 
 core_args = ['-DUSING_GENERATED_CONFIG_H']
+core_ldflags = []
 
 if host_machine.system() == 'linux'
   cdata.set('HAVE_GCC_ATOMICS', 1)
@@ -166,12 +167,17 @@ elif host_machine.system() == 'windows'
   cdata.set('SDL_HAPTIC_DINPUT', 1)
   cdata.set('SDL_POWER_WINDOWS', 1)
   cdata.set('SDL_LOADSO_WINDOWS', 1)
+  cdata.set('SDL_VIDEO_DRIVER_WINDOWS', 1)
+  cdata.set('SDL_VIDEO_RENDER_D3D', 1)
+#  core_args += '
+  core_ldflags += ['winmm.lib', 'version.lib', 'imm32.lib']
 else
   error('Unsupported platform.')
 endif
 
 core_inc = include_directories('.', 'include')
 all_sources = []
+main_sources = []
 
 alsa_dep = dependency('alsa', required : false)
 x11_dep = dependency('x11', required : false)
@@ -220,9 +226,19 @@ sdl2 = library('sdl2',
   all_sources,
   include_directories : core_inc,
   c_args : core_args,
+  link_args : core_ldflags,
   dependencies : core_deps,
 )
+
+sdl2main = static_library('sdl2main',
+  main_sources,
+  include_directories : core_inc,
+  c_args : core_args,
+)
+
 sdl2_dep = declare_dependency(link_with : sdl2,
+  include_directories : core_inc)
+sdl2main_dep = declare_dependency(link_with : sdl2main,
   include_directories : core_inc)
 
 subdir('test')

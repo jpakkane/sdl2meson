@@ -20,6 +20,13 @@ all_sources += files(
   'SDL_video.c',
 )
 
+if host_machine.system() == 'windows'
+  subdir('windows')
+elif x11_dep.found()
+  subdir('unix')
+else
+  error('Unknown platform.')
+endif
 #subdir('android')
 #subdir('cocoa')
 #subdir('directfb')

@@ -9,4 +9,3 @@ elif host_machine.system() == 'windows'
 else
   error('Unsupported platform.')
 endif
-
