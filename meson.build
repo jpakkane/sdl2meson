@@ -242,4 +242,5 @@ sdl2_dep = declare_dependency(link_with : sdl2,
 sdl2main_dep = declare_dependency(link_with : sdl2main,
   include_directories : core_inc)
 
-subdir('test')
+# disabled for now
+# subdir('test')
