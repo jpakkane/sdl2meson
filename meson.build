@@ -154,6 +154,7 @@ all_sources = []
 alsa_dep = dependency('alsa', required : false)
 x11_dep = dependency('x11', required : false)
 xi_dep = dependency('xi', required : false)
+xext_dep = dependency('xext', required : false)
 gl_dep = dependency('gl', required : false)
 xrandr_dep = dependency('xrandr', required : false)
 xinerama_dep = dependency('xinerama', required : false)
@@ -174,6 +175,7 @@ endif
 
 if alsa_dep.found()
   cdata.set('SDL_AUDIO_DRIVER_ALSA', 1)
+  cdata.set('SDL_AUDIO_DRIVER_ALSA_DYNAMIC', 1)
 endif
 
 # The config file is at root because we want to
@@ -189,7 +191,7 @@ core_args = ['-pthread']
 core_deps = [find_library('m', required : false),
   find_library('dl', required : false),
   find_library('pthread', required : false),
-  x11_dep, xi_dep, xrandr_dep, gl_dep, xinerama_dep,
+  x11_dep, xi_dep, xrandr_dep, xext_dep, gl_dep, xinerama_dep,
   alsa_dep,
 ]
 
