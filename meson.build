@@ -67,14 +67,14 @@ check_functions = [
   ['HAVE_STRCHR', 'strchr', '#include<string.h>'],
   ['HAVE_STRRCHR', 'strrchr', '#include<string.h>'],
   ['HAVE_STRSTR', 'strstr', '#include<string.h>'],
-# check token HAVE_ITOA
-# check token HAVE__LTOA
-# check token HAVE__UITOA
-# check token HAVE__ULTOA
+  ['HAVE_ITOA', 'itoa', '#include<stdlib.h>'],
+  ['HAVE__LTOA', '_ltoa', '#include<stlib.h>'],
+  ['HAVE__UITOA', '_uitoa', '#include<stdlib.h>'],
+  ['HAVE__ULTOA', '_ultoa', '#include<stdlib.h>'],
   ['HAVE_STRTOL', 'strtol', '#include<stdlib.h>'],
   ['HAVE_STRTOUL', 'strtoul', '#include<stdlib.h>'],
-# check token HAVE__I64TOA
-# check token HAVE__UI64TOA
+  ['HAVE__I64TOA', '_i64toa', '#include<stdlib.h>'],
+  ['HAVE__UI64TOA', '_uit64toa', '#include<stdlib.h>'],
   ['HAVE_STRTOLL', 'strtoll', '#include<stdlib.h>'],
   ['HAVE_STRTOULL', 'strtoull', '#include<stdlib.h>'],
   ['HAVE_STRTOD', 'strtod', '#include<stdlib.h>'],
@@ -82,9 +82,9 @@ check_functions = [
   ['HAVE_ATOF', 'atof', '#include<stdlib.h>'],
   ['HAVE_STRCMP', 'strcmp', '#include<string.h>'],
   ['HAVE_STRNCMP', 'strncmp', '#include<string.h>'],
-# check token HAVE__STRICMP
+  ['HAVE__STRICMP', '_stricmp', '#include<string.h>'],
   ['HAVE_STRCASECMP', 'strcasecmp', '#include<strings.h>'],
-# check token HAVE__STRNICMP
+  ['HAVE__STRNICMP', '_strnicmp', '#include<string.h>'],
   ['HAVE_STRNCASECMP', 'strncasecmp', '#include<strings.h>'],
   ['HAVE_VSSCANF', 'vsscanf', '#include<stdio.h>'],
   ['HAVE_VSNPRINTF', 'vsnprintf', '#include<stdio.h>'],
@@ -128,25 +128,47 @@ foreach f : check_functions
 endforeach
 
 cdata.set('HAVE_LIBC', 1)
-cdata.set('HAVE_M_PI', 1)
-cdata.set('HAVE_GCC_ATOMICS', 1)
-cdata.set('HAVE_GCC_SYNC_LOCK_TEST_AND_SET', 1)
-cdata.set('HAVE_PTHREAD_SPINLOCK', 1)
-cdata.set('SDL_POWER_LINUX', 1)
-cdata.set('SDL_THREAD_PTHREAD', 1)
-cdata.set('SDL_JOYSTICK_LINUX', 1)
-cdata.set('SDL_INPUT_LINUXEV', 1)
-cdata.set('SDL_INPUT_LINUXKD', 1)
-cdata.set('SDL_HAPTIC_LINUX', 1)
-cdata.set('SDL_TIMER_UNIX', 1)
-cdata.set('SDL_FILESYSTEM_UNIX', 1)
-cdata.set('SDL_DYNAMIC_API', 1)
-cdata.set('SDL_LOADSO_DLOPEN', 1)
-cdata.set('SDL_VIDEO_DRIVER_X11', 1)
-cdata.set('SDL_VIDEO_DRIVER_X11_DYNAMIC_XINPUT2', 1)
-cdata.set('SDL_VIDEO_DRIVER_X11_XINPUT2', 1)
-cdata.set('SDL_VIDEO_DRIVER_X11_XINPUT2_SUPPORTS_MULTITOUCH', 1)
-cdata.set('SDL_VIDEO_DRIVER_X11_SUPPORTS_GENERIC_EVENTS', 1)
+if cc.compiles('''#include<math.h>
+double dummy = M_PI
+''', name : 'M_PI')
+  cdata.set('HAVE_M_PI', 1)
+endif
+
+core_args = ['-DUSING_GENERATED_CONFIG_H']
+
+if host_machine.system() == 'linux'
+  cdata.set('HAVE_GCC_ATOMICS', 1)
+  cdata.set('HAVE_GCC_SYNC_LOCK_TEST_AND_SET', 1)
+  cdata.set('HAVE_PTHREAD_SPINLOCK', 1)
+  cdata.set('SDL_POWER_LINUX', 1)
+  cdata.set('SDL_THREAD_PTHREAD', 1)
+  cdata.set('SDL_JOYSTICK_LINUX', 1)
+  cdata.set('SDL_INPUT_LINUXEV', 1)
+  cdata.set('SDL_INPUT_LINUXKD', 1)
+  cdata.set('SDL_HAPTIC_LINUX', 1)
+  cdata.set('SDL_TIMER_UNIX', 1)
+  cdata.set('SDL_FILESYSTEM_UNIX', 1)
+  cdata.set('SDL_DYNAMIC_API', 1)
+  cdata.set('SDL_LOADSO_DLOPEN', 1)
+  cdata.set('SDL_VIDEO_DRIVER_X11', 1)
+  cdata.set('SDL_VIDEO_DRIVER_X11_DYNAMIC_XINPUT2', 1)
+  cdata.set('SDL_VIDEO_DRIVER_X11_XINPUT2', 1)
+  cdata.set('SDL_VIDEO_DRIVER_X11_XINPUT2_SUPPORTS_MULTITOUCH', 1)
+  cdata.set('SDL_VIDEO_DRIVER_X11_SUPPORTS_GENERIC_EVENTS', 1)
+  core_args += ['-pthread']
+elif host_machine.system() == 'windows'
+  cdata.set('SDL_THREAD_WINDOWS', 1)
+  cdata.set('SDL_JOYSTICK_DINPUT', 1)
+  cdata.set('SDL_HAPTIC_DINPUT', 1)
+  cdata.set('SDL_TIMER_WINDOWS', 1)
+  cdata.set('SDL_FILESYSTEM_WINDOWS', 1)
+  cdata.set('SDL_DYNAMIC_API', 1)
+  cdata.set('SDL_HAPTIC_DINPUT', 1)
+  cdata.set('SDL_POWER_WINDOWS', 1)
+  cdata.set('SDL_LOADSO_WINDOWS', 1)
+else
+  error('Unsupported platform.')
+endif
 
 core_inc = include_directories('.', 'include')
 all_sources = []
@@ -187,7 +209,6 @@ configure_file(input : 'SDL_config.h.meson',
 
 
 subdir('src')
-core_args = ['-pthread']
 core_deps = [find_library('m', required : false),
   find_library('dl', required : false),
   find_library('pthread', required : false),
