@@ -190,20 +190,21 @@ xinerama_dep = dependency('xinerama', required : false)
 if x11_dep.found()
   if gl_dep.found()
     cdata.set('SDL_VIDEO_OPENGL_GLX', 1)
+    cdata.set('SDL_VIDEO_RENDER_OGL', 1)
   endif
   if xrandr_dep.found()
     cdata.set('SDL_VIDEO_DRIVER_X11_DYNAMIC_XRANDR', 1)
-    cdata.set('SDL_VIDEO_DRIVER_X11_XRANDR', 1)
+#    cdata.set('SDL_VIDEO_DRIVER_X11_XRANDR', 1)
   endif
   if xinerama_dep.found()
     cdata.set('SDL_VIDEO_DRIVER_X11_XINERAMA', 1)
-    cdata.set('SDL_VIDEO_DRIVER_X11_DYNAMIC_XINERAMA', 1)
+#    cdata.set('SDL_VIDEO_DRIVER_X11_DYNAMIC_XINERAMA', 1)
   endif
 endif
 
 if alsa_dep.found()
   cdata.set('SDL_AUDIO_DRIVER_ALSA', 1)
-  cdata.set('SDL_AUDIO_DRIVER_ALSA_DYNAMIC', 1)
+#  cdata.set('SDL_AUDIO_DRIVER_ALSA_DYNAMIC', 1)
 endif
 
 # The config file is at root because we want to
