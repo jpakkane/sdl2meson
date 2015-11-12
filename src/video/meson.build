@@ -23,7 +23,7 @@ all_sources += files(
 if host_machine.system() == 'windows'
   subdir('windows')
 elif x11_dep.found()
-  subdir('unix')
+  subdir('x11')
 else
   error('Unknown platform.')
 endif
@@ -38,6 +38,4 @@ subdir('dummy')
 #subdir('raspberry')
 #subdir('uikit')
 #subdir('wayland')
-#subdir('windows')
 #subdir('winrt')
-subdir('x11')
