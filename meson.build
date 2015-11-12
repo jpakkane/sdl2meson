@@ -6,6 +6,15 @@ version_major = varr[0]
 version_minor = varr[1]
 version_micro = varr[2]
 
+core_deps = [find_library('m', required : false),
+  find_library('dl', required : false),
+  find_library('pthread', required : false),
+]
+
+if host_machine.system() == 'darwin'
+  add_languages('objc')
+endif
+
 cc = meson.get_compiler('c')
 cdata = configuration_data()
 check_headers = [
@@ -172,6 +181,26 @@ elif host_machine.system() == 'windows'
   cdata.set('SDL_AUDIO_DRIVER_WINMM', 1)
 #  core_args += '
   core_ldflags += ['winmm.lib', 'version.lib', 'imm32.lib']
+elif host_machine.system() == 'darwin'
+  cdata.set('HAVE_GCC_ATOMICS', 1)
+  cdata.set('HAVE_GCC_SYNC_LOCK_TEST_AND_SET', 1)
+  cdata.set('HAVE_PTHREAD_SPINLOCK', 1)
+  cdata.set('SDL_POWER_MACOSX', 1)
+  cdata.set('SDL_THREAD_PTHREAD', 1)
+  cdata.set('SDL_JOYSTICK_IOKIT', 1)
+  cdata.set('SDL_HAPTIC_IOKIT', 1)
+  cdata.set('SDL_TIMER_UNIX', 1)
+  cdata.set('SDL_FILESYSTEM_UNIX', 1)
+  cdata.set('SDL_DYNAMIC_API', 1)
+  cdata.set('SDL_LOADSO_DLOPEN', 1)
+  cdata.set('SDL_VIDEO_DRIVER_COCOA', 1)
+  cdata.set('SDL_AUDIO_DRIVER_COREAUDIO', 1)
+  core_args += ['-pthread']
+  core_deps += [dependency('appleframeworks',
+    modules : ['CoreFoundation', 'Foundation',
+     'QuartzCore', 'CoreAudio',
+    'AudioToolbox', 'AudioUnit', 'ForceFeedback',
+    'IOKit', 'Cocoa', 'Carbon', 'CoreGraphics'])]
 else
   error('Unsupported platform.')
 endif
@@ -217,9 +246,7 @@ configure_file(input : 'SDL_config.h.meson',
 
 
 subdir('src')
-core_deps = [find_library('m', required : false),
-  find_library('dl', required : false),
-  find_library('pthread', required : false),
+core_deps += [
   x11_dep, xi_dep, xrandr_dep, xext_dep, gl_dep, xinerama_dep,
   alsa_dep,
 ]
