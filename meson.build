@@ -169,6 +169,7 @@ elif host_machine.system() == 'windows'
   cdata.set('SDL_LOADSO_WINDOWS', 1)
   cdata.set('SDL_VIDEO_DRIVER_WINDOWS', 1)
   cdata.set('SDL_VIDEO_RENDER_D3D', 1)
+  cdata.set('SDL_AUDIO_DRIVER_WINMM', 1)
 #  core_args += '
   core_ldflags += ['winmm.lib', 'version.lib', 'imm32.lib']
 else
