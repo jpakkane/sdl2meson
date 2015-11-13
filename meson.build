@@ -195,11 +195,12 @@ elif host_machine.system() == 'darwin'
   cdata.set('SDL_LOADSO_DLOPEN', 1)
   cdata.set('SDL_VIDEO_DRIVER_COCOA', 1)
   cdata.set('SDL_AUDIO_DRIVER_COREAUDIO', 1)
+  cdata.set('SDL_VIDEO_OPENGL_CGL', 1)
   core_args += ['-pthread']
   core_deps += [dependency('appleframeworks',
     modules : ['CoreFoundation', 'Foundation',
      'QuartzCore', 'CoreAudio',
-    'AudioToolbox', 'AudioUnit', 'ForceFeedback',
+    'AudioUnit', 'AudioToolbox', 'ForceFeedback',
     'IOKit', 'Cocoa', 'Carbon', 'CoreGraphics'])]
 else
   error('Unsupported platform.')
@@ -217,10 +218,13 @@ gl_dep = dependency('gl', required : false)
 xrandr_dep = dependency('xrandr', required : false)
 xinerama_dep = dependency('xinerama', required : false)
 
+if gl_dep.found()
+  cdata.set('SDL_VIDEO_RENDER_OGL', 1)
+endif
+
 if x11_dep.found()
   if gl_dep.found()
     cdata.set('SDL_VIDEO_OPENGL_GLX', 1)
-    cdata.set('SDL_VIDEO_RENDER_OGL', 1)
   endif
   if xrandr_dep.found()
     cdata.set('SDL_VIDEO_DRIVER_X11_DYNAMIC_XRANDR', 1)

@@ -243,7 +243,6 @@ SDL_CreateRenderer(SDL_Window * window, int index, Uint32 flags)
                 }
             }
         }
-
         if (!renderer) {
             for (index = 0; index < n; ++index) {
                 const SDL_RenderDriver *driver = render_drivers[index];
