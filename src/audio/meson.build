@@ -11,7 +11,9 @@ subdir('alsa')
 #subdir('android')
 #subdir('arts')
 #subdir('bsd')
-subdir('coreaudio')
+if host_machine.system() == 'darwin'
+  subdir('coreaudio')
+endif
 subdir('directsound')
 subdir('disk')
 #subdir('dsp')
